@@ -77,7 +77,7 @@ const data = {
 	},
 	"2018-05-06 14:43:46": {
 		"propulsion.starboard.revolutions": null,
-		"propulsion.port.revolutions": null
+		"propulsion.port.revolutions": null,
 	},
 	"2018-05-06 14:43:49": {
 		"propulsion.starboard.revolutions": null,
@@ -233,7 +233,7 @@ const data = {
 	},
 	"2018-05-07 21:58:22": {
 		"propulsion.starboard.revolutions": "67.98333333333333",
-		"propulsion.port.revolutions": "67.2"
+		"propulsion.port.revolutions": "67.2",
 	},
 	"2018-05-07 21:58:25": {
 		"propulsion.starboard.revolutions": "67.56666666666666",
@@ -249,7 +249,8 @@ const data = {
 	},
 	"2018-05-07 22:01:06": {
 		"propulsion.starboard.revolutions": "67.61666666666666",
-		"propulsion.port.revolutions": "68.26666666666667"
+		"propulsion.port.revolutions": "68.26666666666667",
+
 	},
 	"2018-05-07 22:02:27": {
 		"propulsion.starboard.revolutions": "65.81666666666666",

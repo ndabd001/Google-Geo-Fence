@@ -1,7 +1,7 @@
-import { Chart } from 'react-google-charts';
 import React from 'react';
 import data from './data';
 import _ from 'lodash';
+import { Chart, AnnotationChart } from 'react-google-charts';
 
 let arraydata = [];
 
@@ -13,15 +13,61 @@ Object.keys(newdata).forEach(function(key){
 });
 
 for(let i in arraydata){
- 
+  
     for(let key in data[i]){
-     for(let key2 in data[i][key]){
-        arraydata.push(data[i][key][key2])
-     }
+
+     arraydata[i].push(data[i][key]);
     }
   
 }
 
+let mainarr = [['date','engine1','engine2']];
+for(let key in data){
+  let newarr = [null];
+  newarr[0] = key;
+  for(let key2 in data[key]){
+    newarr.push(parseInt(data[key][key2]))
+      //console.log(data[key][key2]);
+    }
+    if(newarr.length == 2)
+      newarr.push(null);
+    mainarr.push(newarr);
+  }
+  //console.log(data[key]);
+
+let control = [];
+ _.mapKeys(data, function(value, key) {
+   _.mapKeys(value, function(metric,path){
+      control.push(path)
+  })
+});
+let new1 = _.uniq(control)
+let result = new1.sort()
+let resultcount = Object.keys(result).length;
+
+let newmain = ['date'];
+
+for (let i = 1; i< result.length + 1; i++){
+    newmain.push('engine' + i)
+}
+
+let testmain = [];
+
+testmain.push(newmain);
+for(let key in data){
+  let temparr = [];
+
+  for(let i=0;i<=resultcount;i++)
+    temparr[i] = null;
+
+  temparr[0] = new Date(key);
+  for(let j = 1; j<result.length + 1;j++){
+    if(data[key][result[j-1]])
+      temparr[j] = parseInt(data[key][result[j-1]]);
+  }
+  testmain.push(temparr);
+}
+console.log(testmain);
 //arraydata.push([Object.keys(newdata)]);
 
 class ExampleChart extends React.Component {
@@ -29,36 +75,28 @@ class ExampleChart extends React.Component {
     super(props);
     this.state = {
       options: {
-        title: 'Age vs. Weight comparison',
+        title: 'RPM over time',
         hAxis: { title: 'Date', minValue: 0, maxValue: 15 },
         vAxis: { title: 'RPM', minValue: 0, maxValue: 15 },
         legend: 'none',
       },
-      data: [
-        ['Date', 'Value','value2'],
-        ["2018-05-04" , 12,13],
-        [4, 5.5,5],
-        [11,7,5],
-        [4, 5,7],
-        [3, 3.5,3],
-        [6.5, 7,5],
-      ],
+      data: testmain,
     };
   }
   render() {
+    // console.log(testmain);
     return (
-      <div>
-        <div>{JSON.stringify(arraydata)}</div>
-      </div>
-      // <Chart
-        // chartType="LineChart"
-        // data={this.state.data}
-        // options={this.state.options}
-        // graph_id="ScatterChart"
-        // width="100%"
-        // height="400px"
-        // legend_toggle
-      ///>
+      
+      <Chart
+        chartType="AnnotatedTimeLine"
+        chartPackages={['corechart','annotatedtimeline','map']}
+        data={this.state.data}
+        options={this.state.options}
+        graph_id="ScatterChart"
+        width="100%"
+        height="400px"
+        legend_toggle
+       />
     );
   }
 }
