@@ -3,23 +3,23 @@ import data from './data';
 import _ from 'lodash';
 import { Chart, AnnotationChart } from 'react-google-charts';
 
-let arraydata = [];
+// let arraydata = [];
 
 
-let newdata = _.mapValues(data,function(o){o["propulsion.port.revolutions"]});
+// let newdata = _.mapValues(data,function(o){o["propulsion.port.revolutions"]});
 
-Object.keys(newdata).forEach(function(key){
-  arraydata.push(new Array(key));
-});
+// Object.keys(newdata).forEach(function(key){
+//   arraydata.push(new Array(key));
+// });
 
-for(let i in arraydata){
+// for(let i in arraydata){
   
-    for(let key in data[i]){
+//     for(let key in data[i]){
 
-     arraydata[i].push(data[i][key]);
-    }
+//      arraydata[i].push(data[i][key]);
+//     } 
   
-}
+// }
 
 let mainarr = [['date','engine1','engine2']];
 for(let key in data){
@@ -27,13 +27,13 @@ for(let key in data){
   newarr[0] = key;
   for(let key2 in data[key]){
     newarr.push(parseInt(data[key][key2]))
-      //console.log(data[key][key2]);
+      console.log(data[key][key2]);
     }
     if(newarr.length == 2)
       newarr.push(null);
     mainarr.push(newarr);
   }
-  //console.log(data[key]);
+  // console.log(data[key]);
 
 let control = [];
  _.mapKeys(data, function(value, key) {
@@ -70,7 +70,7 @@ for(let key in data){
 console.log(testmain);
 //arraydata.push([Object.keys(newdata)]);
 
-class ExampleChart extends React.Component {
+class ExampleMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -84,7 +84,7 @@ class ExampleChart extends React.Component {
     };
   }
   render() {
-    // console.log(testmain);
+     console.log(testmain);
     return (
       
       <Chart
@@ -100,4 +100,4 @@ class ExampleChart extends React.Component {
     );
   }
 }
-export default ExampleChart;
+export default ExampleMap;
