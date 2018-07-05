@@ -10,7 +10,7 @@ import GoogleMapReact from 'google-map-react';
 
 let geoFence = []; //json object
 let vertices = [];
-let fence = []; //actual shape object
+let fence = [];
 let isDrawing = false;
 let isComplete = false;
 
@@ -29,104 +29,45 @@ class ExampleMap extends Component {
       lat: 25.76,
       lng: -80.19
     },
-    zoom: 10
-    // drawingManager: handleGoogleMapApi(){
-    //   return this.
-    // }
+    zoom: 10,
+    geoFence: null,
+    vertices: null,
+    fence: null,
+    // isDrawing: false,
+    // isComplete: false
   }
   state = {
      map: null,
      maps: null,
      drawingManager: null,
-     circle: null,
-     polygon: null
-   }
-
-  newGeoFence = () =>{
-    let that = this;
-    let maps = this.state.maps;
-    let map = this.state.map;
-    let drawingManager = new maps.drawing.DrawingManager({
-      drawingMode: maps.drawing.OverlayType.CIRCLE,
-      drawingControl: true,
-      drawingControlOptions: {
-        position: maps.ControlPosition.TOP_CENTER,
-        drawingModes: ['circle', 'polygon']
-      },
-      circleOptions: {
-        fillColor: '#FF0000',
-        fillOpacity: 0.2,
-        strokeWeight: 2,
-        clickable: true,
-        editable: true,
-        zIndex: 1,
-        draggable: true,
-        geodesic: true
-      },
-      polygonOptions: {
-        fillColor: '#FF0000',
-        fillOpacity: 0.2,
-        strokeWeight: 2,
-        clickable: true,
-        editable: true,
-        zIndex: 1,
-        draggable: true,
-        geodesic: true
-      },
-    });
-    if(geoFence.length >= 1){
-      clearOverlays()
-      geoFence = [];
-      vertices = [];
-      drawingManager.setMap(map);
-      this.setState({ drawingManager });
-    }
-    maps.event.addListener(drawingManager,'markerComplete', function(event){
-      console.log('marker is complete')
-        if(isDrawing){
-        if(isComplete && geoFence != null){
-          geoFence = []
-          isComplete = false;
-        }
+     overlay: {
+      type: null,
+      info: null
       }
-      else
-        isDrawing = true;
+  }  
 
-    })
-
-    maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
-      
-      let shapes = { 
-        boat_id: 'xxxx',
-        geoFence: geoFence
-      }
-
-      drawingManager.setOptions({drawingMode: null});
-      drawingManager.setOptions({map: null});
-
-      fence.push(event.overlay);
-      console.log(fence) 
-      // const num = fence.length()
-      // console.log(num)
-
-      if (event.type === 'circle') {
-        that.setState({circle: event.overlay})
+   saveGeoFence = () => {
+      let overlay = this.state.overlay;
+      this.setState({overlay});
+    if (this.state.overlay.type === 'circle') {
+        overlay.type = event.type;
+        // console.log(event.overlay.type)
+        // console.log('overlaycomplete circle', this.circle)
         var radius = event.overlay.getRadius();
         // console.log('radius = ', radius)
         var center = event.overlay.getCenter().toString();
-        // console.log('center is', center)
-        var circle = {
-            type: 'Circle',
-            info: {
-              radius: radius,
-              coord: {center}
-            }
+        // console.log(radius)
+        // console.log(center)
+        overlay.info = {
+          radius: radius,
+          coord: {center}
         }
-        geoFence.push(circle)
-        console.log('shapes is', shapes);
-        console.log('geoFence is', geoFence)
+        // geoFence.push(circle)
+        // console.log('overlay is', that.state);
+        // console.log('geoFence is', geoFence)
       }
       else{
+        overlay.type = event.type;
         var poly = event.overlay.getPath()
         // console.log(poly)
         // console.log(event.overlay);
@@ -137,21 +78,35 @@ class ExampleMap extends Component {
           var vertex = {lat:xy.lat(),lng:xy.lng()}
           vertices.push(vertex)
         }
-        var polygon = {
-            Type: 'Polygon',
-            Info: [{vertices}]
+        overlay.info = {
+            Info: {vertices}
         }
-        geoFence.push(polygon);
-        console.log(shapes);
       }
+    console.log(this.state.overlay)
 
-      // console.log(shapes)
-    });
+   }
+
+  newGeoFence = () => {
+    let map = this.state.map
+    this.setState({map});
+    let drawingManager = this.state.drawingManager;   
+
+    if(this.state.overlay.info != null){
+      drawingManager.setMap(map);
+      clearOverlays()
+      // that.setState({overlay: null})
+      this.setState({ drawingManager });
+    }
+
+    // drawingManager.setMap(map);
+    // this.setState({drawingManager});
+    // console.log(this.overlay)
+    console.log('hello')
   }
 
-handleGoogleMapApi(map, maps) {
+handleGoogleMapApi = (map, maps) => {
     let that = this;
-    this.setState({map,maps});
+    that.setState({map,maps});
     let drawingManager = new maps.drawing.DrawingManager({
       drawingMode: maps.drawing.OverlayType.CIRCLE,
       drawingControl: true,
@@ -180,27 +135,12 @@ handleGoogleMapApi(map, maps) {
         geodesic: true
       },
     });
-    this.setState({ drawingManager })
     drawingManager.setMap(map);
-    // drawingManager = { map:map}
-
-    // maps.event.addListener(drawingManager,'markerComplete', function(event){
-    //   console.log('marker is complete')
-    //     if(isDrawing){
-    //     if(isComplete && geoFence != null){
-    //       geoFence = []
-    //       isComplete = false;
-    //     }
-    //   }
-    //   else
-    //     isDrawing = true;
-    // })
-
+    that.setState({ drawingManager })
+    
     maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
-      let shapes = { 
-        boat_id: 'xxxx',
-        geoFence: geoFence
-      }
+      let overlay = that.state.overlay;
+      that.setState({overlay})
 
       drawingManager.setOptions({drawingMode: null});
       drawingManager.setOptions({map: null});
@@ -208,27 +148,24 @@ handleGoogleMapApi(map, maps) {
       fence.push(event.overlay);
       // console.log(fence) 
       if (event.type === 'circle') {
-        that.setState({circle: event.overlay})
-        console.log(event.overlay)
+        overlay.type = event.type;
+        // console.log(event.overlay.type)
         // console.log('overlaycomplete circle', this.circle)
         var radius = event.overlay.getRadius();
         // console.log('radius = ', radius)
         var center = event.overlay.getCenter().toString();
         // console.log(radius)
         // console.log(center)
-        var circle = {
-            type: 'Circle',
-            info: {
-              radius: radius,
-              coord: {center}
-            }
+        overlay.info = {
+          radius: radius,
+          coord: {center}
         }
-        geoFence.push(circle)
-        console.log('shapes is', shapes);
-        console.log('geoFence is', geoFence)
+        // geoFence.push(circle)
+        // console.log('overlay is', that.state);
+        // console.log('geoFence is', geoFence)
       }
       else{
-        that.setState({polygon: event.overlay})
+        overlay.type = event.type;
         var poly = event.overlay.getPath()
         // console.log(poly)
         // console.log(event.overlay);
@@ -239,16 +176,15 @@ handleGoogleMapApi(map, maps) {
           var vertex = {lat:xy.lat(),lng:xy.lng()}
           vertices.push(vertex)
         }
-        var polygon = {
-            Type: 'Polygon',
-            Info: [{vertices}]
+        overlay.info = {
+            Info: {vertices}
         }
-        geoFence.push(polygon);
-        console.log(shapes)
       }
 
       // console.log(shapes)
+    console.log(that.state)
     });
+
   }
 
 
@@ -263,7 +199,6 @@ handleGoogleMapApi(map, maps) {
     return (
       // Important! Always set the container height explicitly
       <div style={{ height: '100vh', width: '100%' }}>
-         <button onClick={this.newGeoFence}>New GeoFence</button>
         <GoogleMapReact
           defaultCenter={this.props.center}
           defaultZoom={this.props.zoom}       
@@ -273,6 +208,12 @@ handleGoogleMapApi(map, maps) {
           yesIWantToUseGoogleMapApiInternals
           onGoogleApiLoaded={({map,maps})=>this.handleGoogleMapApi(map,maps) }
         >     
+        <button onClick={this.saveGeoFence}> Save GF </button>
+        <button onClick={this.newGeoFence}
+        // map={this.state.map}
+        // overlay={this.state.overlay}
+        // drawingManager={this.state.drawingManager}
+        > New GF</button>
         </GoogleMapReact>
       </div>
     );
